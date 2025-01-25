@@ -3,6 +3,7 @@ import { Info, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import matchSoundFile from './assets/audio/match.mp3';
 import completeSoundFile from './assets/audio/complete.mp3';
+import { Analytics } from '@vercel/analytics/react';
 
 // Multiple sets of zen-themed emojis
 const emojiSets = [
@@ -187,6 +188,7 @@ function App() {
     <div className="min-h-screen bg-[#F2F3F0] flex flex-col items-center justify-center p-4">
       {/* Header */}
       <div className="text-center mb-12 relative w-full max-w-md">
+      <Analytics />
         <h1 className="text-4xl font-bold text-[#2F3327] mb-3">Zen Match</h1>
         <p className="text-[#5C6355] text-lg">A calming memory game designed for quick mental breaks</p>
         
