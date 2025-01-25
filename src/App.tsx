@@ -47,6 +47,7 @@ function App() {
   const [streak, setStreak] = useState(0);
   const [showScorePopup, setShowScorePopup] = useState<{score: number, x: number, y: number} | null>(null);
   const [showFinalScore, setShowFinalScore] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const triggerConfetti = () => {
     const count = 200;
@@ -92,10 +93,11 @@ function App() {
   };
 
   const initializeGame = () => {
-    const nextSetIndex = (currentEmojiSetIndex + 1) % emojiSets.length;
-    setCurrentEmojiSetIndex(nextSetIndex);
+    // Get a random emoji set instead of sequential
+    const randomSetIndex = Math.floor(Math.random() * emojiSets.length);
+    setCurrentEmojiSetIndex(randomSetIndex);
     
-    const currentEmojis = emojiSets[nextSetIndex];
+    const currentEmojis = emojiSets[randomSetIndex];
     const duplicatedEmojis = [...currentEmojis, ...currentEmojis];
     const shuffledEmojis = duplicatedEmojis.sort(() => Math.random() - 0.5);
     
@@ -112,6 +114,7 @@ function App() {
     setScore(0);
     setStreak(0);
     setShowFinalScore(false);
+    setHasInteracted(false);
   };
 
   useEffect(() => {
@@ -136,6 +139,10 @@ function App() {
   };
 
   const handleTileClick = (id: number) => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+    
     if (isChecking || flippedTiles.includes(id) || tiles[id].isMatched) return;
 
     const newFlippedTiles = [...flippedTiles, id];
@@ -186,38 +193,40 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#F2F3F0] flex flex-col items-center justify-center p-4">
-      {/* Header */}
-      <div className="text-center mb-12 relative w-full max-w-md">
-      <Analytics />
-        <h1 className="text-4xl font-bold text-[#2F3327] mb-3">Zen Match</h1>
-        <p className="text-[#5C6355] text-lg">A calming memory game designed for quick mental breaks</p>
+      {/* Header with responsive spacing and text */}
+      <div className="text-center mb-6 sm:mb-8 relative w-full max-w-md px-2">
+        <Analytics />
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#2F3327] mb-2">Zen Match</h1>
+        <p className="text-base sm:text-lg text-[#5C6355] whitespace-normal sm:whitespace-nowrap px-4">
+          A calming memory game designed for quick mental breaks
+        </p>
         
         <button
           onClick={() => setShowHowToPlay(true)}
           className="absolute right-0 top-0 p-2 text-[#5C6355] hover:text-[#2F3327] transition-colors"
           aria-label="How to Play"
         >
-          <Info className="w-6 h-6" />
+          <Info className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       </div>
 
-      {/* Score Display */}
-      <div className="w-full max-w-md mb-4 flex justify-between items-center text-[#5C6355]">
-        <div className="flex items-center gap-4">
-          <div className="text-lg">
+      {/* Score Display with responsive spacing */}
+      <div className="w-full max-w-md mb-4 sm:mb-6 flex justify-between items-center text-[#5C6355] px-2">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="text-base sm:text-lg">
             Score: <span className="font-bold">{score}</span>
           </div>
           {streak > 0 && (
             <div className="flex items-center gap-1">
-              <span className="text-lg">Streak: {streak}</span>
-              <span className="text-xl">🔥</span>
+              <span className="text-base sm:text-lg">Streak: {streak}</span>
+              <span className="text-lg sm:text-xl">🔥</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full max-w-md mb-8">
+      {/* Progress Bar with responsive spacing */}
+      <div className="w-full max-w-md mb-4 sm:mb-6 px-2">
         <div className="h-2 bg-[#E5E7E1] rounded-full overflow-hidden">
           <div 
             className="h-full bg-[#8B9B7E] transition-all duration-500 ease-out"
@@ -225,6 +234,15 @@ function App() {
           />
         </div>
       </div>
+
+      {/* Conditional Instruction Text */}
+      {!hasInteracted && (
+        <div className="w-full max-w-md mb-4 sm:mb-6 text-center px-2">
+          <p className="text-base sm:text-lg text-[#5C6355]">
+            Tap on any tile to start the zen mode
+          </p>
+        </div>
+      )}
 
       {/* Floating Score Animation */}
       {showScorePopup && (
@@ -240,13 +258,13 @@ function App() {
         </div>
       )}
 
-      {/* Game Grid */}
-      <div className="grid grid-cols-4 gap-4 max-w-md w-full">
+      {/* Game Grid with responsive sizing */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-4 w-full max-w-[calc(100vw-2rem)] sm:max-w-md px-2">
         {tiles.map(tile => (
           <button
             key={tile.id}
             onClick={() => handleTileClick(tile.id)}
-            className={`aspect-square rounded-2xl text-4xl flex items-center justify-center transition-all duration-500 transform ${
+            className={`aspect-square rounded-xl sm:rounded-2xl text-2xl sm:text-4xl flex items-center justify-center transition-all duration-500 transform ${
               tile.isFlipped || tile.isMatched || flippedTiles.includes(tile.id)
                 ? 'bg-white shadow-md rotate-0'
                 : 'bg-[#E5E7E1] rotate-180'
